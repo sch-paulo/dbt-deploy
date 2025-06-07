@@ -1,0 +1,171 @@
+# This file defines the schema, descriptions, and tests for the staging models.
+
+version: 2
+
+models:
+  - name: stg_customer
+    description: "One record per customer. Includes full name and cleaned column names."
+    columns:
+      - name: customer_id
+        description: "The unique identifier for a customer."
+        tests:
+          - unique
+          - not_null
+      - name: support_rep_id
+        description: "The foreign key to the employee who is the customer's support representative."
+        tests:
+          - relationships:
+              to: ref('stg_employee')
+              field: employee_id
+
+  - name: stg_employee
+    description: "One record per employee, including their manager and personal details."
+    columns:
+      - name: employee_id
+        description: "The unique identifier for an employee."
+        tests:
+          - unique
+          - not_null
+      - name: reports_to_employee_id
+        description: "The foreign key to the employee's manager. Can be null for top-level employees."
+        tests:
+          - relationships:
+              to: ref('stg_employee')
+              field: employee_id
+
+  - name: stg_invoice
+    description: "One record per invoice, representing a single customer transaction."
+    columns:
+      - name: invoice_id
+        description: "The unique identifier for an invoice."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "The foreign key to the customer who made the purchase."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customer')
+              field: customer_id
+
+  - name: stg_invoiceline
+    description: "One record per line item on an invoice. Includes calculated line total."
+    columns:
+      - name: invoice_line_id
+        description: "The unique identifier for an invoice line item."
+        tests:
+          - unique
+          - not_null
+      - name: invoice_id
+        description: "The foreign key to the parent invoice."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_invoice')
+              field: invoice_id
+      - name: track_id
+        description: "The foreign key to the track that was purchased."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_track')
+              field: track_id
+
+  - name: stg_track
+    description: "One record per track available in the music store. Includes duration in seconds."
+    columns:
+      - name: track_id
+        description: "The unique identifier for a track."
+        tests:
+          - unique
+          - not_null
+      - name: album_id
+        description: "The foreign key to the album the track belongs to."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_album')
+              field: album_id
+      - name: media_type_id
+        description: "The foreign key to the media type of the track."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_media_type')
+              field: media_type_id
+      - name: genre_id
+        description: "The foreign key to the genre of the track."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_genre')
+              field: genre_id
+
+  - name: stg_album
+    description: "One record per album."
+    columns:
+      - name: album_id
+        description: "The unique identifier for an album."
+        tests:
+          - unique
+          - not_null
+      - name: artist_id
+        description: "The foreign key to the artist of the album."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_artist')
+              field: artist_id
+
+  - name: stg_artist
+    description: "One record per artist."
+    columns:
+      - name: artist_id
+        description: "The unique identifier for an artist."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_genre
+    description: "One record per genre."
+    columns:
+      - name: genre_id
+        description: "The unique identifier for a genre."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_media_type
+    description: "One record per media type (e.g., MPEG audio file)."
+    columns:
+      - name: media_type_id
+        description: "The unique identifier for a media type."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_playlist
+    description: "One record per playlist."
+    columns:
+      - name: playlist_id
+        description: "The unique identifier for a playlist."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_playlist_track
+    description: "A junction/bridge table linking tracks to playlists."
+    columns:
+      - name: playlist_id
+        description: "The foreign key to the playlist."
+        tests:
+          - relationships:
+              to: ref('stg_playlist')
+              field: playlist_id
+      - name: track_id
+        description: "The foreign key to the track."
+        tests:
+          - relationships:
+              to: ref('stg_track')
+              field: track_id

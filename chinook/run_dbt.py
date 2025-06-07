@@ -9,4 +9,5 @@ import subprocess
 load_dotenv(dotenv_path="../.env")
 
 # Run dbt debug (or any dbt command)
-subprocess.run(["dbt", "debug"])
+# subprocess.run(["dbt", "debug"])
+subprocess.run(["dbt", "docs", "generate"])

@@ -6,11 +6,12 @@ WITH sources AS (
 
 -- Business logics
 
-WITH renamed_and_cleaning AS (
+WITH renamed AS (
     SELECT 
         customer_id,
         first_name,
         last_name,
+        first_name || ' ' || last_name AS full_name,
         company,
         address,
         city,
@@ -25,6 +26,6 @@ WITH renamed_and_cleaning AS (
         sources
 )
 
--- FInal query
+-- Final query
 
-SELECT * FROM renamed_and_cleaning
+SELECT * FROM renamed
